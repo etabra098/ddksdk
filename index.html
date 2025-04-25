@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Splash Matching Game</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #f0f9ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #ff6b6b;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        
+        .color-card {
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .color-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .splash {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: grab;
+        }
+        
+        .target {
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: white;
+            border: 3px dashed #aaa;
+        }
+        
+        #message {
+            margin: 20px;
+            font-size: 24px;
+            color: #5f27cd;
+            min-height: 30px;
+        }
+        
+        #score {
+            font-size: 20px;
+            color: #1dd1a1;
+            margin-bottom: 20px;
+        }
+        
+        .correct {
+            animation: bounce 0.5s;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <h1>🌈 Color Splash Match! 🌈</h1>
+    <div id="score">Score: 0</div>
+    <div id="message">Drag the colorful splashes to match the words!</div>
+    
+    <div class="game-container">
+        <!-- Color Targets -->
+        <div class="target" data-color="red">RED</div>
+        <div class="target" data-color="blue">BLUE</div>
+        <div class="target" data-color="yellow">YELLOW</div>
+        <div class="target" data-color="green">GREEN</div>
+        
+        <!-- Color Splashes -->
+        <div class="splash" data-color="red" draggable="true" style="background-color: #ff6b6b;">🔴</div>
+        <div class="splash" data-color="blue" draggable="true" style="background-color: #48dbfb;">🔵</div>
+        <div class="splash" data-color="yellow" draggable="true" style="background-color: #ffd166;">🟡</div>
+        <div class="splash" data-color="green" draggable="true" style="background-color: #1dd1a1;">🟢</div>
+    </div>
+
+    <script>
+        let score = 0;
+        let matchedPairs = 0;
+        let draggedSplash = null;
+        
+        // Get all elements
+        const splashes = document.querySelectorAll('.splash');
+        const targets = document.querySelectorAll('.target');
+        const message = document.getElementById('message');
+        const scoreDisplay = document.getElementById('score');
+        
+        // Add event listeners to splashes
+        splashes.forEach(splash => {
+            splash.addEventListener('dragstart', dragStart);
+        });
+        
+        // Add event listeners to targets
+        targets.forEach(target => {
+            target.addEventListener('dragover', dragOver);
+            target.addEventListener('drop', drop);
+        });
+        
+        function dragStart(e) {
+            draggedSplash = e.target;
+            e.dataTransfer.setData('text/plain', e.target.dataset.color);
+            setTimeout(() => e.target.style.visibility = 'hidden', 0);
+        }
+        
+        function dragOver(e) {
+            e.preventDefault();
+        }
+        
+        function drop(e) {
+            e.preventDefault();
+            const target = e.target.closest('.target');
+            const droppedColor = e.dataTransfer.getData('text/plain');
+            
+            if (target.dataset.color === droppedColor) {
+                // Correct match
+                target.innerHTML = '';
+                target.appendChild(draggedSplash);
+                draggedSplash.style.visibility = 'visible';
+                target.classList.add('correct');
+                
+                score += 10;
+                matchedPairs++;
+                scoreDisplay.textContent = `Score: ${score}`;
+                
+                setTimeout(() => {
+                    target.classList.remove('correct');
+                }, 500);
+                
+                if (matchedPairs === 4) {
+                    message.textContent = '🎉 Awesome! You matched all colors! 🎉';
+                }
+            } else {
+                // Wrong match
+                message.textContent = 'Oops! Try again!';
+                draggedSplash.style.visibility = 'visible';
+                setTimeout(() => {
+                    message.textContent = 'Drag the colorful splashes to match the words!';
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>
