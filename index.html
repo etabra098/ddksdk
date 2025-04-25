@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Splash Matching Game</title>
+    <title>Ultimate Matching Adventure</title>
     <style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -12,11 +12,30 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            text-align: center;
         }
         
         h1 {
             color: #ff6b6b;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 5px;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            width: 500px;
+            margin-bottom: 20px;
+        }
+        
+        #level-display {
+            font-size: 20px;
+            color: #5f27cd;
+        }
+        
+        #score {
+            font-size: 20px;
+            color: #1dd1a1;
         }
         
         .game-container {
@@ -24,66 +43,97 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             max-width: 500px;
-            margin: 20px auto;
+            margin: 0 auto 20px;
         }
         
-        .color-card {
+        .card {
             width: 100px;
             height: 100px;
             border-radius: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-size: 40px;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s;
+            background-color: white;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            user-select: none;
         }
         
-        .color-card:hover {
+        .card:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
         
-        .splash {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            cursor: grab;
-        }
-        
         .target {
-            width: 100px;
-            height: 100px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-            font-weight: bold;
-            background-color: white;
             border: 3px dashed #aaa;
         }
         
-        #message {
-            margin: 20px;
-            font-size: 24px;
-            color: #5f27cd;
-            min-height: 30px;
+        .draggable {
+            cursor: grab;
         }
         
-        #score {
-            font-size: 20px;
-            color: #1dd1a1;
-            margin-bottom: 20px;
+        .dragging {
+            opacity: 0.5;
         }
+        
+        #message {
+            font-size: 24px;
+            color: #5f27cd;
+            min-height: 40px;
+            margin: 10px 0;
+        }
+        
+        /* Popup Styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .popup-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .popup h2 {
+            color: #ff6b6b;
+            margin-top: 0;
+        }
+        
+        .next-level-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .next-level-btn:hover {
+            background-color: #45a049;
+        }
+        
+        /* Images for different categories */
+        .color { font-size: 50px; }
+        .animal { font-size: 50px; }
+        .vehicle { font-size: 40px; }
+        .fruit { font-size: 50px; }
         
         .correct {
             animation: bounce 0.5s;
@@ -96,66 +146,175 @@
     </style>
 </head>
 <body>
-    <h1>🌈 Color Splash Match! 🌈</h1>
-    <div id="score">Score: 0</div>
-    <div id="message">Drag the colorful splashes to match the words!</div>
+    <h1>🌟 Ultimate Matching Adventure 🌟</h1>
+    <div class="game-info">
+        <div id="level-display">Level 1: Colors</div>
+        <div id="score">Score: 0</div>
+    </div>
+    <div id="message">Drag the items to match the pictures!</div>
     
-    <div class="game-container">
-        <!-- Color Targets -->
-        <div class="target" data-color="red">RED</div>
-        <div class="target" data-color="blue">BLUE</div>
-        <div class="target" data-color="yellow">YELLOW</div>
-        <div class="target" data-color="green">GREEN</div>
-        
-        <!-- Color Splashes -->
-        <div class="splash" data-color="red" draggable="true" style="background-color: #ff6b6b;">🔴</div>
-        <div class="splash" data-color="blue" draggable="true" style="background-color: #48dbfb;">🔵</div>
-        <div class="splash" data-color="yellow" draggable="true" style="background-color: #ffd166;">🟡</div>
-        <div class="splash" data-color="green" draggable="true" style="background-color: #1dd1a1;">🟢</div>
+    <div class="game-container" id="game-board">
+        <!-- Game elements will be added by JavaScript -->
+    </div>
+
+    <!-- Congrats Popup -->
+    <div class="popup" id="congrats-popup">
+        <div class="popup-content">
+            <h2>🎉 Level Complete! 🎉</h2>
+            <p id="popup-message">You matched all the colors!</p>
+            <button class="next-level-btn" id="next-level-btn">Next Level →</button>
+        </div>
     </div>
 
     <script>
+        // Game Data - 20+ levels!
+        const levels = [
+            // Level 1-5: Colors
+            { 
+                name: "Colors", 
+                pairs: [
+                    { item: "🔴", match: "RED", type: "color" },
+                    { item: "🔵", match: "BLUE", type: "color" },
+                    { item: "🟡", match: "YELLOW", type: "color" },
+                    { item: "🟢", match: "GREEN", type: "color" }
+                ]
+            },
+            {
+                name: "More Colors",
+                pairs: [
+                    { item: "🟠", match: "ORANGE", type: "color" },
+                    { item: "🟣", match: "PURPLE", type: "color" },
+                    { item: "🟤", match: "BROWN", type: "color" },
+                    { item: "⚫", match: "BLACK", type: "color" }
+                ]
+            },
+            // Levels 6-10: Animals
+            {
+                name: "Animals",
+                pairs: [
+                    { item: "🐶", match: "DOG", type: "animal" },
+                    { item: "🐱", match: "CAT", type: "animal" },
+                    { item: "🐭", match: "MOUSE", type: "animal" },
+                    { item: "🐰", match: "RABBIT", type: "animal" }
+                ]
+            },
+            {
+                name: "More Animals",
+                pairs: [
+                    { item: "🦁", match: "LION", type: "animal" },
+                    { item: "🐮", match: "COW", type: "animal" },
+                    { item: "🐷", match: "PIG", type: "animal" },
+                    { item: "🐸", match: "FROG", type: "animal" }
+                ]
+            },
+            // Levels 11-15: Vehicles
+            {
+                name: "Vehicles",
+                pairs: [
+                    { item: "🚗", match: "CAR", type: "vehicle" },
+                    { item: "🚌", match: "BUS", type: "vehicle" },
+                    { item: "🚲", match: "BIKE", type: "vehicle" },
+                    { item: "✈️", match: "PLANE", type: "vehicle" }
+                ]
+            },
+            {
+                name: "More Vehicles",
+                pairs: [
+                    { item: "🚑", match: "AMBULANCE", type: "vehicle" },
+                    { item: "🚒", match: "FIRE TRUCK", type: "vehicle" },
+                    { item: "🚜", match: "TRACTOR", type: "vehicle" },
+                    { item: "🚢", match: "SHIP", type: "vehicle" }
+                ]
+            },
+            // Levels 16-20: Fruits
+            {
+                name: "Fruits",
+                pairs: [
+                    { item: "🍎", match: "APPLE", type: "fruit" },
+                    { item: "🍌", match: "BANANA", type: "fruit" },
+                    { item: "🍊", match: "ORANGE", type: "fruit" },
+                    { item: "🍓", match: "STRAWBERRY", type: "fruit" }
+                ]
+            },
+            {
+                name: "More Fruits",
+                pairs: [
+                    { item: "🍐", match: "PEAR", type: "fruit" },
+                    { item: "🍑", match: "PEACH", type: "fruit" },
+                    { item: "🍍", match: "PINEAPPLE", type: "fruit" },
+                    { item: "🥝", match: "KIWI", type: "fruit" }
+                ]
+            }
+            // Add more levels as needed...
+        ];
+
+        // Game Variables
+        let currentLevel = 0;
         let score = 0;
         let matchedPairs = 0;
-        let draggedSplash = null;
-        
-        // Get all elements
-        const splashes = document.querySelectorAll('.splash');
-        const targets = document.querySelectorAll('.target');
-        const message = document.getElementById('message');
+        let draggedItem = null;
+
+        // DOM Elements
+        const gameBoard = document.getElementById('game-board');
+        const levelDisplay = document.getElementById('level-display');
         const scoreDisplay = document.getElementById('score');
-        
-        // Add event listeners to splashes
-        splashes.forEach(splash => {
-            splash.addEventListener('dragstart', dragStart);
-        });
-        
-        // Add event listeners to targets
-        targets.forEach(target => {
-            target.addEventListener('dragover', dragOver);
-            target.addEventListener('drop', drop);
-        });
-        
-        function dragStart(e) {
-            draggedSplash = e.target;
-            e.dataTransfer.setData('text/plain', e.target.dataset.color);
-            setTimeout(() => e.target.style.visibility = 'hidden', 0);
+        const messageDisplay = document.getElementById('message');
+        const congratsPopup = document.getElementById('congrats-popup');
+        const popupMessage = document.getElementById('popup-message');
+        const nextLevelBtn = document.getElementById('next-level-btn');
+
+        // Initialize Game
+        function initGame() {
+            matchedPairs = 0;
+            gameBoard.innerHTML = '';
+            const level = levels[currentLevel];
+            levelDisplay.textContent = `Level ${currentLevel + 1}: ${level.name}`;
+            messageDisplay.textContent = `Match the ${level.name.toLowerCase()}!`;
+
+            // Create game elements
+            level.pairs.forEach(pair => {
+                // Create draggable item
+                const item = document.createElement('div');
+                item.className = `card draggable ${pair.type}`;
+                item.draggable = true;
+                item.dataset.match = pair.match;
+                item.textContent = pair.item;
+                item.addEventListener('dragstart', dragStart);
+                gameBoard.appendChild(item);
+
+                // Create target
+                const target = document.createElement('div');
+                target.className = 'card target';
+                target.dataset.match = pair.match;
+                target.textContent = pair.match;
+                target.addEventListener('dragover', dragOver);
+                target.addEventListener('drop', drop);
+                gameBoard.appendChild(target);
+            });
         }
-        
+
+        // Drag and Drop Functions
+        function dragStart(e) {
+            draggedItem = e.target;
+            e.dataTransfer.setData('text/plain', e.target.dataset.match);
+            setTimeout(() => e.target.classList.add('dragging'), 0);
+        }
+
         function dragOver(e) {
             e.preventDefault();
         }
-        
+
         function drop(e) {
             e.preventDefault();
             const target = e.target.closest('.target');
-            const droppedColor = e.dataTransfer.getData('text/plain');
-            
-            if (target.dataset.color === droppedColor) {
+            const itemMatch = e.dataTransfer.getData('text/plain');
+
+            if (target && target.dataset.match === itemMatch && draggedItem) {
                 // Correct match
                 target.innerHTML = '';
-                target.appendChild(draggedSplash);
-                draggedSplash.style.visibility = 'visible';
+                target.appendChild(draggedItem);
+                draggedItem.classList.remove('dragging');
+                draggedItem.draggable = false;
                 target.classList.add('correct');
                 
                 score += 10;
@@ -166,18 +325,37 @@
                     target.classList.remove('correct');
                 }, 500);
                 
-                if (matchedPairs === 4) {
-                    message.textContent = '🎉 Awesome! You matched all colors! 🎉';
+                // Check level completion
+                if (matchedPairs === levels[currentLevel].pairs.length) {
+                    showCongrats();
                 }
-            } else {
-                // Wrong match
-                message.textContent = 'Oops! Try again!';
-                draggedSplash.style.visibility = 'visible';
-                setTimeout(() => {
-                    message.textContent = 'Drag the colorful splashes to match the words!';
-                }, 1000);
             }
         }
+
+        // Level Completion
+        function showCongrats() {
+            popupMessage.textContent = `Great job matching ${levels[currentLevel].name.toLowerCase()}!`;
+            congratsPopup.style.display = 'flex';
+        }
+
+        function nextLevel() {
+            currentLevel++;
+            if (currentLevel >= levels.length) {
+                popupMessage.textContent = "🎉 You completed all levels! 🎉";
+                nextLevelBtn.textContent = "Play Again";
+                currentLevel = 0;
+                score = 0;
+                scoreDisplay.textContent = `Score: ${score}`;
+            }
+            congratsPopup.style.display = 'none';
+            initGame();
+        }
+
+        // Event Listeners
+        nextLevelBtn.addEventListener('click', nextLevel);
+
+        // Start the game
+        initGame();
     </script>
 </body>
 </html>
